@@ -1,0 +1,58 @@
+{
+  "id": "2051304",
+  "name": "no name",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "6447211",
+      "name": "分页向左",
+      "font_class": "icon_paging_left",
+      "unicode": "e652",
+      "unicode_decimal": 58962
+    },
+    {
+      "icon_id": "6447212",
+      "name": "分页向右",
+      "font_class": "icon_paging_right",
+      "unicode": "e653",
+      "unicode_decimal": 58963
+    },
+    {
+      "icon_id": "6360799",
+      "name": "eye",
+      "font_class": "eye2",
+      "unicode": "e669",
+      "unicode_decimal": 58985
+    },
+    {
+      "icon_id": "11219352",
+      "name": "eye",
+      "font_class": "eye3",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "4320349",
+      "name": "时长",
+      "font_class": "shichang",
+      "unicode": "e659",
+      "unicode_decimal": 58969
+    },
+    {
+      "icon_id": "6977945",
+      "name": "左箭头",
+      "font_class": "zuojiantou",
+      "unicode": "e61d",
+      "unicode_decimal": 58909
+    },
+    {
+      "icon_id": "6977958",
+      "name": "右箭头",
+      "font_class": "youjiantou",
+      "unicode": "e622",
+      "unicode_decimal": 58914
+    }
+  ]
+}
