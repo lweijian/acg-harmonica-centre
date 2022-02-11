@@ -8,12 +8,12 @@
             <form id="form">
                 <div class="item">
                     <input id="username" type="text" required autocomplete="off" v-model="username">
-                    <label for="username">用户名</label>
+                    <label >用户名</label>
                 </div>
                 <div class="item">
                     <input id="password" :type="[isSee?'text':'password']" required v-model="password"
                            @keyup.enter="login">
-                    <label for="password">密码</label>
+                    <label>密码</label>
                     <span class="eye iconfont" id="eye" @click="toggleSee"
                           :class="[isSee? 'icon-eye2' : 'icon-eye3' ]"></span>
                 </div>

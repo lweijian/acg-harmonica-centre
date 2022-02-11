@@ -235,13 +235,15 @@
                 this.refreshUser();
             },
             //注册用户相关方法
-            toggleSee: function () {
+            toggleSee() {
                 this.isSee = !this.isSee;
             },
-            toggleCheckSee: function () {
+            toggleCheckSee(){
                 this.isCheckSee = !this.isCheckSee;
             },
-
+            isSame(v1,v2){
+            return   Object.is(v1,v2)
+            },
             //检验格式
             checkFormat: function () {
                 if (this.user.username == null || this.user.username === "" || this.user.password == null || this.user.password === "") {
@@ -265,7 +267,8 @@
                     });
                     return false;
                 }
-                if (this.user.password !== this.user.checkPassword) {
+                let isSame=this.isSame(this.user.password ,this.user.checkPassword);
+                if (!isSame) {
                     this.$message({
                         type: 'error',
                         message: '确认密码和密码不一致!'
@@ -325,7 +328,6 @@
                             message: '用户修改失败'
                         });
                         this.refreshUser();
-                        console.log(res)
                     }
 
                 })

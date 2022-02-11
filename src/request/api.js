@@ -1,4 +1,4 @@
-import http from './http'
+import http from './interceptors'
 export const httpLogin =(param)=> http.post("/login",param)
 export const httpRegister=(param)=>http.post("/centre_user/registered",param)
 export const httpMusicPage=(param)=>http.post("/sheet_music/find_page",param)

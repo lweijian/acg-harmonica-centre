@@ -4,10 +4,8 @@ import router from "../router";
 import ReturnCode from "../assets/js/ReturnCode";
 
 const instance = axios.create()
-// const requestCache = [];
+const requestCache = [];
 let isRefresh = false;
-
-
 // 环境的切换
 if (process.env.NODE_ENV === 'development') {
     instance.defaults.baseURL = 'http://localhost:3000'
@@ -19,22 +17,39 @@ if (process.env.NODE_ENV === 'development') {
 
 function refreshToken() {
     return new Promise((resolve, reject) => {
-
         if (!isRefresh) {
             isRefresh = true;
-            axios.post("http://localhost:3000/refresh_token", {
+            instance.post("http://localhost:3000/refresh_token", {
                 refreshToken: store.state.refreshToken
             }).then(res => {
                 resolve(res)
-
             }).catch(err => {
                 reject(err)
             }).finally(() => {
                 isRefresh = false;
             })
-
         }
     })
+}
+
+async function retransmitAndRefreshToken(response) {
+    try {
+        const res = await refreshToken()
+        store.commit("setAccessToken", res.data.accessToken)
+        store.commit("setRefreshToken", res.data.refreshToken)
+        requestCache.forEach(callback=>{
+            callback()
+        })
+        requestCache.length=0;
+        const retransmit = await instance(response.config)
+        return retransmit.data
+    } catch (err) {
+        alert(err.data.msg)
+        store.commit("setAccessToken", null)
+        store.commit("setRefreshToken", null)
+        router.push("/login");
+    }
+
 }
 
 instance.defaults.headers.post['Content-Type'] = 'application/json'
@@ -48,36 +63,38 @@ instance.interceptors.request.use(
         return config
     },
     error => {
-        return error
+        return Promise.reject(error)
     })
 
 // 响应拦截器
 instance.interceptors.response.use(
     response => {
+        switch (response.data.code) {
 
-        if (response.data.code === ReturnCode.OK || response.data.code === ReturnCode.LOGIN_OK) {
-            return response?.data
-        } else if (response.data.code === ReturnCode.OUT_TIME_TOKEN) {
-            refreshToken().then(res => {
-                console.log(res)
-                store.commit("setAccessToken", res.data.accessToken)
-                store.commit("setRefreshToken", res.data.refreshToken)
-            }).catch(err => {
-                alert(err.data.msg)
+            case ReturnCode.OK :
+                return Promise.resolve(response.data)
+            case ReturnCode.LOGIN_OK:
+                return Promise.resolve(response.data)
+            case ReturnCode.OUT_TIME_TOKEN :
+                if (!isRefresh) {
+                    return retransmitAndRefreshToken(response)
+                }
+                return new Promise(resolve => {
+                    requestCache.push(async () => {
+                        const res = await instance(response.config)
+                        resolve(res.data)
+                    })
+                })
+            default :
                 store.commit("setAccessToken", null)
                 store.commit("setRefreshToken", null)
                 router.push("/login");
-            })
-        } else {
-            alert(response.data.msg)
-            store.commit("setAccessToken", null)
-            store.commit("setRefreshToken", null)
-            router.push("/login");
+                return Promise.reject('not logged in')
         }
     },
     // 服务器状态码不是200的情况
     error => {
-        return error
+        return Promise.reject(error)
 
     })
 

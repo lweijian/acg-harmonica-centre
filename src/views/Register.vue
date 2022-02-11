@@ -62,7 +62,7 @@ export default {
       this.isCheckSee = !this.isCheckSee;
     },
 
-    checkFormat: function () {
+    checkFormat() {
       if (this.username == null || this.username === "" || this.password == null || this.password === "") {
         this.$message({
           type: 'error',
@@ -94,7 +94,7 @@ export default {
       return true;
 
     },
-    register: function () {
+    register() {
       if (this.checkFormat()) {
         httpRegister({
           username: this.username,
