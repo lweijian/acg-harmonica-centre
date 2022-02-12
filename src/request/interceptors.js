@@ -16,10 +16,12 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 function refreshToken() {
+
+
     return new Promise((resolve, reject) => {
         if (!isRefresh) {
             isRefresh = true;
-            instance.post("http://localhost:3000/refresh_token", {
+            axios.post("http://localhost:3000/refresh_token", {
                 refreshToken: store.state.refreshToken
             }).then(res => {
                 resolve(res)
@@ -35,14 +37,14 @@ function refreshToken() {
 async function retransmitAndRefreshToken(response) {
     try {
         const res = await refreshToken()
-        store.commit("setAccessToken", res.data.accessToken)
-        store.commit("setRefreshToken", res.data.refreshToken)
-        requestCache.forEach(callback=>{
+        store.commit("setAccessToken", res.data.data.accessToken)
+        store.commit("setRefreshToken", res.data.data.refreshToken)
+        requestCache.forEach(callback => {
             callback()
         })
-        requestCache.length=0;
+        requestCache.length = 0;
         const retransmit = await instance(response.config)
-        return retransmit.data
+       return retransmit
     } catch (err) {
         alert(err.data.msg)
         store.commit("setAccessToken", null)
@@ -79,12 +81,13 @@ instance.interceptors.response.use(
                 if (!isRefresh) {
                     return retransmitAndRefreshToken(response)
                 }
-                return new Promise(resolve => {
-                    requestCache.push(async () => {
-                        const res = await instance(response.config)
-                        resolve(res.data)
+
+                    return new Promise(resolve => {
+                        requestCache.push(async () => {
+                            const res = await instance(response.config)
+                            resolve(res)
+                        })
                     })
-                })
             default :
                 store.commit("setAccessToken", null)
                 store.commit("setRefreshToken", null)
